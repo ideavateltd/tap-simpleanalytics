@@ -1,0 +1,42 @@
+{
+  "type": "object",
+  "properties": {
+    "added_unix": {
+      "type": ["integer"]
+    },
+    "added_iso": {
+      "type": ["string"],
+      "format": "date-time"
+    },
+    "url": {
+      "type": ["string"]
+    },
+    "referrer_raw": {
+      "type": ["null", "string"]
+    },
+    "referrer": {
+      "type": ["null", "string"]
+    },
+    "hostname": {
+      "type": ["null", "string"]
+    },
+    "source": {
+      "type": ["null", "string"]
+    },
+    "is_unique": {
+      "type": ["boolean"]
+    },
+    "scrolled_percentage": {
+      "type": ["null", "integer"]
+    },
+    "duration_seconds": {
+      "type": ["null", "integer"]
+    },
+    "device_width_pixels": {
+      "type": ["null", "integer"]
+    },
+    "device_width": {
+      "type": ["null", "integer"]
+    }
+  }
+}

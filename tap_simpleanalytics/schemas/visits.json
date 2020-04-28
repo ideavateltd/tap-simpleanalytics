@@ -26,6 +26,15 @@
     "is_unique": {
       "type": ["boolean"]
     },
+    "utm_source": {
+      "type": ["null", "string"]
+    },
+    "utm_medium": {
+      "type": ["null", "string"]
+    },
+    "utm_campaign": {
+      "type": ["null", "string"]
+    },
     "scrolled_percentage": {
       "type": ["null", "integer"]
     },

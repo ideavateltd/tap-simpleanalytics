@@ -51,8 +51,6 @@ def get_urls(endpoint, start, end):
 def get_url(endpoint, hostname, start, end):
     return BASE_URL.format(endpoint, hostname, start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d"))
 
-INT_FIELDS=["added_unix", "scrolled_percentage", "duration_seconds", "device_width_pixels", "device_width"]
-
 def sync_type(type, endpoint, replicationKey):
     schema = load_schema(type)
     singer.write_schema(type, schema, [replicationKey])
@@ -78,16 +76,21 @@ def sync_type(type, endpoint, replicationKey):
 
         for row in reader:
             # print(row)
-            if row.get("added_iso"):
-                row["added_iso"] = utils.strftime(dateparser.parse(row["added_iso"]))
-            if row.get("is_unique"):
-                row["is_unique"] = row["is_unique"] == "true"
-            for k in INT_FIELDS:
-                if row.get(k) or row.get(k) == "" :
-                    row[k] = None if row[k] == "" else literal_eval(row[k])
-            singer.write_record(type, row)
-            if lastRow == None or row["added_iso"] > lastRow["added_iso"]:
-                lastRow = row
+            mapped = {}
+            for fieldname in schema["properties"].keys():
+                field = schema["properties"][fieldname]
+                value = row[fieldname]
+                if "boolean" in field["type"]:
+                    mapped[fieldname] = value == "true"
+                elif "integer" in field["type"]:
+                    mapped[fieldname] = None if value == "" else literal_eval(value)
+                elif "string" in field["type"] and "format" in field and field["format"] == "date-time":
+                    mapped[fieldname] = utils.strftime(dateparser.parse(value))
+                else:
+                    mapped[fieldname] = value
+            singer.write_record(type, mapped)
+            if lastRow == None or mapped[replicationKey] > lastRow[replicationKey]:
+                lastRow = mapped
 
     if lastRow != None:
         utils.update_state(STATE, type, dateparser.parse(lastRow['added_iso']).strftime("%Y-%m-%d"))

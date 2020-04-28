@@ -43,9 +43,6 @@
     },
     "device_width_pixels": {
       "type": ["null", "integer"]
-    },
-    "device_width": {
-      "type": ["null", "integer"]
     }
   }
 }

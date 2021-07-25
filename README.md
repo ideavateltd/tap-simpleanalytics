@@ -1,12 +1,12 @@
 # tap-simpleanalytics
 
 A singer.io tap for extracting data from the [Simple Analytics](https://www.simpleanalytics.com) API written in python 3.
+
 Author: Hugh Nimmo-Smith (hugh@ideavate.co.uk)
 
 ## Data extracted
 
-- `visits`
-- `events` not yet
+- `visits` using v2 API
 
 ## Configuration
 

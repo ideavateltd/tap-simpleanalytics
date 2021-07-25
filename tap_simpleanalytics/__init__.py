@@ -25,7 +25,7 @@ REQUIRED_CONFIG_KEYS = [
 
 CONFIG = {}
 STATE = {}
-BASE_URL = "https://simpleanalytics.com/api/export/{}?hostname={}&start={}&end={}&timezone=UTC"
+BASE_URL = "https://simpleanalytics.com/api/export/{}?version=2&hostname={}&start={}&end={}&fields={}"
 
 def get_abs_path(path):
     return os.path.join(os.path.dirname(os.path.realpath(__file__)), path)
@@ -44,18 +44,23 @@ def get_start(key, useStartDate=True):
     else:
         return dateparser.parse(STATE[key])
 
-def get_urls(endpoint, start, end):
-    return map(lambda hostname: get_url(endpoint, hostname, start, end), CONFIG['sa_hostnames'])
+def get_urls(endpoint, start, end, fields):
+    return map(lambda hostname: get_url(endpoint, hostname, start, end, fields), CONFIG['sa_hostnames'])
 
 
-def get_url(endpoint, hostname, start, end):
-    return BASE_URL.format(endpoint, hostname, start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d"))
+def get_url(endpoint, hostname, start, end, fields):
+    return BASE_URL.format(endpoint, hostname, start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d"), fields)
 
 def sync_type(type, endpoint, replicationKey):
     schema = load_schema(type)
     singer.write_schema(type, schema, [replicationKey])
 
-    urls = get_urls(endpoint, get_start(type), datetime.now())
+    fieldNames = []
+    for f in schema["properties"].keys():
+        fieldNames.append(f)
+    fields = ','.join(fieldNames)
+
+    urls = get_urls(endpoint, get_start(type), datetime.now(), fields)
 
     lastRow = None
 
